@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Columns and Rows</title>
+    <style>
+        /* Styling the body for a clean, subtle UI */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 20px;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        h2 {
+            text-align: center;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        /* Container for column control buttons */
+        .column-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            background-color: #5A9BF6;
+            color: white;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #407BDB;
+            transform: translateY(-2px);
+        }
+
+        /* Table styling for a clean, modern look */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f7f9fc;
+            color: #555;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        td input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: box-shadow 0.3s ease;
+        }
+
+        td input:focus {
+            box-shadow: 0 0 5px rgba(90, 155, 246, 0.8);
+            outline: none;
+        }
+
+        /* Header row styling */
+        #headerRow input {
+            border: none;
+            background-color: #f1f5f9;
+            padding: 8px;
+            border-radius: 5px;
+        }
+
+        #headerRow select {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-top: 10px;
+            transition: box-shadow 0.3s ease;
+        }
+
+        /* Adding smooth animations */
+        tr {
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        th, td {
+            transform: scale(0.95);
+            animation: scaleIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            to {
+                transform: scale(1);
+            }
+        }
+
+        /* Responsive media queries */
+        @media (max-width: 768px) {
+            button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Create Dynamic Columns and Rows</h2>
+    <div class="column-container">
+        <button id="addColumnBtn">Add Column</button>
+        <button id="addRowBtn">Add Row</button>
+    </div>
+
+    <table id="dashboardTable">
+        <thead>
+            <tr id="headerRow">
+                <!-- Dynamic headers will appear here -->
+            </tr>
+        </thead>
+        <tbody id="bodyRows">
+            <!-- Dynamic rows will appear here -->
+        </tbody>
+    </table>
+
+    <script>
+        const inputTypes = ['text', 'number', 'date', 'email', 'rupees', 'password', 'checkbox', 'radio', 'file', 'color', 'range', 'search', 'tel', 'time', 'url', 'week', 'month'];
+        let columnSettings = [];
+
+        document.getElementById('addColumnBtn').addEventListener('click', addColumn);
+        document.getElementById('addRowBtn').addEventListener('click', addRow);
+
+        function addColumn() {
+            // Add header for the column
+            const headerRow = document.getElementById('headerRow');
+            const th = document.createElement('th');
+
+            // Create input for column header title
+            const headerInput = document.createElement('input');
+            headerInput.type = 'text';
+            headerInput.placeholder = 'Column Title';
+            th.appendChild(headerInput);
+            headerRow.appendChild(th);
+
+            // Create a select for input type
+            const select = document.createElement('select');
+            inputTypes.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                select.appendChild(option);
+            });
+
+            th.appendChild(document.createElement('br'));
+            th.appendChild(select);
+
+            // Track the column settings (header and type)
+            columnSettings.push({ headerInput, select });
+
+            // Update all rows with a new input for this column
+            const rows = document.getElementById('bodyRows').children;
+            for (let i = 0; i < rows.length; i++) {
+                const td = document.createElement('td');
+                const inputElement = document.createElement('input');
+                inputElement.type = select.value; // Set initial input type
+                td.appendChild(inputElement);
+                rows[i].appendChild(td);
+
+                // Update input type dynamically when select is changed
+                select.addEventListener('change', function () {
+                    inputElement.type = this.value;
+                });
+            }
+        }
+
+        function addRow() {
+            const tableBody = document.getElementById('bodyRows');
+            const tr = document.createElement('tr');
+
+            // Add input fields for the new row based on current columns
+            columnSettings.forEach(setting => {
+                const td = document.createElement('td');
+                const inputElement = document.createElement('input');
+                inputElement.type = setting.select.value; // Use the selected input type for this column
+                td.appendChild(inputElement);
+                tr.appendChild(td);
+            });
+
+            tableBody.appendChild(tr);
+        }
+    </script>
+
+</body>
+</html>
