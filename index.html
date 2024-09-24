@@ -11,6 +11,7 @@
             margin: 20px;
             background-color: #f4f6f9;
             color: #333;
+            display: flex;
         }
 
         h2 {
@@ -20,7 +21,6 @@
             margin-bottom: 20px;
         }
 
-        /* Container for column control buttons */
         .column-container {
             text-align: center;
             margin-bottom: 30px;
@@ -43,7 +43,6 @@
             transform: translateY(-2px);
         }
 
-        /* Table styling for a clean, modern look */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -77,7 +76,6 @@
             outline: none;
         }
 
-        /* Header row styling */
         #headerRow input {
             border: none;
             background-color: #f1f5f9;
@@ -93,30 +91,6 @@
             transition: box-shadow 0.3s ease;
         }
 
-        /* Adding smooth animations */
-        tr {
-            opacity: 0;
-            animation: fadeIn 0.5s forwards;
-        }
-
-        th, td {
-            transform: scale(0.95);
-            animation: scaleIn 0.5s forwards;
-        }
-
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes scaleIn {
-            to {
-                transform: scale(1);
-            }
-        }
-
-        /* Responsive media queries */
         @media (max-width: 768px) {
             button {
                 font-size: 14px;
@@ -127,26 +101,96 @@
                 padding: 10px;
             }
         }
+
+        #dashboard {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-row {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h3 {
+            margin-bottom: 20px;
+            font-size: 20px;
+            color: #ecf0f1;
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sidebar li {
+            padding: 10px;
+            border-bottom: 1px solid #34495e;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar li:hover {
+            background-color: #34495e;
+        }
+
+        .content {
+            flex: 1;
+            padding-left: 20px;
+        }
+
     </style>
 </head>
 <body>
 
-    <h2>Create Dynamic Columns and Rows</h2>
-    <div class="column-container">
-        <button id="addColumnBtn">Add Column</button>
-        <button id="addRowBtn">Add Row</button>
+    <div class="sidebar">
+        <h3>Saved Sheets</h3>
+        <ul id="savedSheetsList">
+            <!-- Saved sheets will be dynamically added here -->
+        </ul>
     </div>
 
-    <table id="dashboardTable">
-        <thead>
-            <tr id="headerRow">
-                <!-- Dynamic headers will appear here -->
-            </tr>
-        </thead>
-        <tbody id="bodyRows">
-            <!-- Dynamic rows will appear here -->
-        </tbody>
-    </table>
+    <div class="content">
+        <h2>Create Dynamic Columns and Rows</h2>
+        <div class="column-container">
+            <button id="addColumnBtn">Add Column</button>
+            <button id="addRowBtn">Add Row</button>
+            <button id="submitBtn">Submit</button>
+            <button id="downloadExcelBtn">Download Excel</button>
+        </div>
+
+        <table id="dashboardTable">
+            <thead>
+                <tr id="headerRow">
+                    <!-- Dynamic headers will appear here -->
+                </tr>
+            </thead>
+            <tbody id="bodyRows">
+                <!-- Dynamic rows will appear here -->
+            </tbody>
+        </table>
+
+        <div id="dashboard">
+            <h3>Dashboard Data</h3>
+            <div id="dashboardData"></div>
+        </div>
+    </div>
+
+    <!-- Add SheetJS Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <script>
         const inputTypes = ['text', 'number', 'date', 'email', 'rupees', 'password', 'checkbox', 'radio', 'file', 'color', 'range', 'search', 'tel', 'time', 'url', 'week', 'month'];
@@ -154,20 +198,19 @@
 
         document.getElementById('addColumnBtn').addEventListener('click', addColumn);
         document.getElementById('addRowBtn').addEventListener('click', addRow);
+        document.getElementById('submitBtn').addEventListener('click', submitData);
+        document.getElementById('downloadExcelBtn').addEventListener('click', downloadExcel);
 
         function addColumn() {
-            // Add header for the column
             const headerRow = document.getElementById('headerRow');
             const th = document.createElement('th');
 
-            // Create input for column header title
             const headerInput = document.createElement('input');
             headerInput.type = 'text';
             headerInput.placeholder = 'Column Title';
             th.appendChild(headerInput);
             headerRow.appendChild(th);
 
-            // Create a select for input type
             const select = document.createElement('select');
             inputTypes.forEach(type => {
                 const option = document.createElement('option');
@@ -179,19 +222,16 @@
             th.appendChild(document.createElement('br'));
             th.appendChild(select);
 
-            // Track the column settings (header and type)
             columnSettings.push({ headerInput, select });
 
-            // Update all rows with a new input for this column
             const rows = document.getElementById('bodyRows').children;
             for (let i = 0; i < rows.length; i++) {
                 const td = document.createElement('td');
                 const inputElement = document.createElement('input');
-                inputElement.type = select.value; // Set initial input type
+                inputElement.type = select.value;
                 td.appendChild(inputElement);
                 rows[i].appendChild(td);
 
-                // Update input type dynamically when select is changed
                 select.addEventListener('change', function () {
                     inputElement.type = this.value;
                 });
@@ -202,18 +242,76 @@
             const tableBody = document.getElementById('bodyRows');
             const tr = document.createElement('tr');
 
-            // Add input fields for the new row based on current columns
             columnSettings.forEach(setting => {
                 const td = document.createElement('td');
                 const inputElement = document.createElement('input');
-                inputElement.type = setting.select.value; // Use the selected input type for this column
+                inputElement.type = setting.select.value;
                 td.appendChild(inputElement);
                 tr.appendChild(td);
             });
 
             tableBody.appendChild(tr);
         }
-    </script>
 
+        function submitData() {
+            const rows = document.getElementById('bodyRows').children;
+            const dashboardData = document.getElementById('dashboardData');
+            dashboardData.innerHTML = '';
+
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const inputs = row.getElementsByTagName('input');
+                const div = document.createElement('div');
+                div.classList.add('dashboard-row');
+
+                let rowData = '';
+                for (let j = 0; j < inputs.length; j++) {
+                    rowData += `${inputs[j].value} | `;
+                }
+
+                div.textContent = rowData.slice(0, -3);
+                dashboardData.appendChild(div);
+            }
+        }
+
+        function downloadExcel() {
+            const sheetName = prompt("Enter a name for the sheet:");
+
+            if (!sheetName) {
+                alert("Sheet name is required.");
+                return;
+            }
+
+            const headerRow = document.getElementById('headerRow').getElementsByTagName('input');
+            const rows = document.getElementById('bodyRows').children;
+
+            const data = [];
+
+            // Create header row
+            const headers = Array.from(headerRow).map(input => input.value || 'Untitled');
+            data.push(headers);
+
+            // Add table rows
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const inputs = row.getElementsByTagName('input');
+                const rowData = Array.from(inputs).map(input => input.value);
+                data.push(rowData);
+            }
+
+            const worksheet = XLSX.utils.aoa_to_sheet(data);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+
+            // Save the Excel file
+            XLSX.writeFile(workbook, `${sheetName}.xlsx`);
+
+            // Display the sheet in the sidebar
+            const sheetList = document.getElementById('savedSheetsList');
+            const listItem = document.createElement('li');
+            listItem.textContent = sheetName;
+            sheetList.appendChild(listItem);
+        }
+    </script>
 </body>
 </html>
