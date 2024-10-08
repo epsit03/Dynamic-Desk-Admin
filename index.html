@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Columns and Rows</title>
+    <title>Dynamic Columns and Rows with Admin Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         /* General Styling */
@@ -182,54 +182,124 @@
             font-size: 14px;
         }
 
+        /* Hide the table and controls by default */
+        .protected-content {
+            display: none;
+        }
+
+        /* Login Form */
+        #loginForm {
+            margin: auto;
+            width: 100%;
+            max-width: 400px;
+            padding: 50px;
+            text-align: center;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        #loginForm input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        #loginForm button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        #loginForm button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Logout Button */
+        #logoutBtn {
+            display: none;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #dc3545;
+            color: white;
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        #logoutBtn:hover {
+            background-color: #c82333;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h3>Saved Sheets</h3>
-        <ul id="savedSheetsList">
-            <!-- Saved sheets will be dynamically added here -->
-        </ul>
+    <!-- Admin Login Form -->
+    <div id="loginForm">
+        <h2>Admin Login</h2>
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button onclick="handleLogin()">Login</button>
     </div>
 
-    <!-- Main Content -->
-    <div class="content">
-        <h2>Create Dynamic Columns and Rows</h2>
-
-        <!-- Button Controls -->
-        <div class="column-container">
-            <button id="newSheetBtn">New Sheet</button>
-            <button id="addColumnBtn">Add Column</button>
-            <button id="addRowBtn">Add Row</button>
-            <button id="submitBtn">Submit</button>
-            <button id="downloadExcelBtn">Download Excel</button>
+    <!-- Protected Content (only visible after login) -->
+    <div class="protected-content">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h3>Saved Sheets</h3>
+            <ul id="savedSheetsList">
+                <!-- Saved sheets will be dynamically added here -->
+            </ul>
         </div>
 
-        <!-- Data Table -->
-        <table id="dashboardTable">
-            <thead>
-                <tr id="headerRow">
-                    <!-- Dynamic headers will appear here -->
-                </tr>
-            </thead>
-            <tbody id="bodyRows">
-                <!-- Dynamic rows will appear here -->
-            </tbody>
-        </table>
+        <!-- Main Content -->
+        <div class="content">
+            <h2>Create Dynamic Columns and Rows</h2>
 
-        <!-- Dashboard View -->
-        <div id="dashboard">
-            <h3>Dashboard Data</h3>
-            <table id="dashboardDataTable">
-                <thead id="dashboardHeader">
-                    <!-- Dashboard headers will be added here -->
+            <!-- Button Controls -->
+            <div class="column-container">
+                <button id="newSheetBtn">New Sheet</button>
+                <button id="addColumnBtn">Add Column</button>
+                <button id="addRowBtn">Add Row</button>
+                <button id="submitBtn">Submit</button>
+                <button id="downloadExcelBtn">Download Excel</button>
+            </div>
+
+            <!-- Data Table -->
+            <table id="dashboardTable">
+                <thead>
+                    <tr id="headerRow">
+                        <!-- Dynamic headers will appear here -->
+                    </tr>
                 </thead>
-                <tbody id="dashboardBody">
-                    <!-- Dashboard rows will be added here -->
+                <tbody id="bodyRows">
+                    <!-- Dynamic rows will appear here -->
                 </tbody>
             </table>
+
+            <!-- Dashboard View -->
+            <div id="dashboard">
+                <h3>Dashboard Data</h3>
+                <table id="dashboardDataTable">
+                    <thead id="dashboardHeader">
+                        <!-- Dashboard headers will be added here -->
+                    </thead>
+                    <tbody id="dashboardBody">
+                        <!-- Dashboard rows will be added here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <button id="logoutBtn" onclick="handleLogout()">Logout</button>
         </div>
     </div>
 
@@ -241,13 +311,38 @@
         let columnSettings = [];
         let savedSheets = {};
 
+        // Handle Admin Login
+        function handleLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Basic credential check (replace with your logic)
+            if (username === 'admin' && password === 'password') {
+                document.getElementById('loginForm').style.display = 'none';
+                document.querySelector('.protected-content').style.display = 'block';
+                document.getElementById('logoutBtn').style.display = 'inline-block';
+            } else {
+                alert('Invalid login credentials!');
+            }
+        }
+
+        // Handle Admin Logout
+        function handleLogout() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.querySelector('.protected-content').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'none';
+        }
+
+        // Button event listeners for dynamic table functionality
         document.getElementById('newSheetBtn').addEventListener('click', newSheet);
         document.getElementById('addColumnBtn').addEventListener('click', addColumn);
         document.getElementById('addRowBtn').addEventListener('click', addRow);
         document.getElementById('submitBtn').addEventListener('click', submitData);
         document.getElementById('downloadExcelBtn').addEventListener('click', downloadExcel);
 
-        function newSheet() {
+        // Existing functions for handling dynamic columns, rows, saving/loading sheets, and downloading Excel...
+        // (Already in your previous implementation)
+            function newSheet() {
             const sheetName = prompt("Enter the name of the new sheet:");
 
             if (!sheetName) {
@@ -403,7 +498,6 @@
             const workbook = XLSX.utils.table_to_book(table);
             XLSX.writeFile(workbook, 'sheet_data.xlsx');
         }
-
     </script>
 
 </body>
