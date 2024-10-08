@@ -6,74 +6,71 @@
     <title>Dynamic Columns and Rows with Admin Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* General Styling */
+         /* General Styling */
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f8f9fd;
+            background-color: #f4f7fa; /* Softer background color */
             display: flex;
         }
 
-        h2 {
+        h2, h3 {
             text-align: center;
-            font-weight: 600;
-            color: #444;
-            margin-bottom: 30px;
+            color: #343a40; /* Darker color for better readability */
+            margin: 0 0 20px;
         }
 
         .column-container {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         button {
-            padding: 12px 25px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 8px;
+            border-radius: 5px; /* Slightly reduced radius for a sharper look */
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px; /* Reduced font size for buttons */
             font-weight: 500;
-            margin-right: 10px;
+            margin: 0 5px;
             background-color: #007bff;
             color: white;
             transition: background-color 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 6px 12px rgba(0, 123, 255, 0.2);
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
         }
 
         button:hover {
             background-color: #0069d9;
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 15px;
             background-color: white;
-            border-radius: 12px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         th, td {
-            padding: 15px;
+            padding: 12px;
             text-align: center;
             border: 1px solid #ddd;
         }
 
         th {
             background-color: #f1f5f9;
-            font-size: 16px;
-            font-weight: 600;
             color: #555;
         }
 
         td input {
-            width: 100%;
-            padding: 10px;
+            width: 90%; /* Slightly reduced width for better spacing */
+            padding: 8px;
             border: 1px solid #ddd;
-            border-radius: 5px;
+            border-radius: 4px;
             transition: box-shadow 0.3s ease;
         }
 
@@ -86,14 +83,15 @@
             border: none;
             background-color: #f1f5f9;
             padding: 8px;
-            border-radius: 5px;
+            border-radius: 4px;
+            width: 90%; /* Aligns with input fields */
         }
 
         #headerRow select {
             padding: 8px;
-            border-radius: 5px;
+            border-radius: 4px;
             border: 1px solid #ddd;
-            margin-top: 10px;
+            margin-top: 8px; /* Reduced margin for cleaner layout */
             transition: box-shadow 0.3s ease;
         }
 
@@ -104,17 +102,16 @@
             background-color: #343a40;
             color: white;
             padding: 20px;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
             position: fixed;
             top: 0;
             left: 0;
         }
 
         .sidebar h3 {
-            margin-bottom: 30px;
-            font-size: 22px;
+            margin-bottom: 20px; /* Reduced space */
+            font-size: 20px;
             color: #f8f9fd;
-            font-weight: 600;
         }
 
         .sidebar ul {
@@ -123,10 +120,10 @@
         }
 
         .sidebar li {
-            padding: 15px;
-            margin-bottom: 10px;
+            padding: 12px;
+            margin-bottom: 8px; /* Reduced space */
             background-color: #495057;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
@@ -136,55 +133,20 @@
         }
 
         .content {
-            margin-left: 270px;
-            padding: 40px;
+            margin-left: 270px; /* Accommodates sidebar width */
+            padding: 30px; /* Reduced padding */
             flex: 1;
             background-color: #f8f9fd;
         }
 
         /* Dashboard Styling */
         #dashboard {
-            margin-top: 30px;
+            margin-top: 20px;
             padding: 20px;
             background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             overflow-x: auto;
-        }
-
-        #dashboard h3 {
-            margin-bottom: 20px;
-            font-size: 20px;
-            font-weight: 600;
-            color: #343a40;
-        }
-
-        #dashboardDataTable {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        #dashboardDataTable th, #dashboardDataTable td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-
-        #dashboardDataTable th {
-            background-color: #f1f5f9;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        #dashboardDataTable td {
-            background-color: #fff;
-            font-size: 14px;
-        }
-
-        /* Hide the table and controls by default */
-        .protected-content {
-            display: none;
         }
 
         /* Login Form */
@@ -192,30 +154,31 @@
             margin: auto;
             width: 100%;
             max-width: 400px;
-            padding: 50px;
+            padding: 40px;
             text-align: center;
             background-color: #fff;
             border-radius: 8px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.05);
         }
 
         #loginForm input {
             width: 100%;
-            padding: 12px;
-            margin-bottom: 10px;
+            padding: 10px;
+            margin-bottom: 15px; /* Adjusted spacing */
             border: 1px solid #ddd;
-            border-radius: 6px;
+            border-radius: 4px;
             font-size: 14px;
         }
 
         #loginForm button {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             background-color: #007bff;
             color: #fff;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
+            font-size: 14px;
         }
 
         #loginForm button:hover {
@@ -225,15 +188,14 @@
         /* Logout Button */
         #logoutBtn {
             display: none;
-            padding: 12px 25px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
             background-color: #dc3545;
             color: white;
             margin-top: 20px;
-            font-size: 16px;
-            font-weight: 500;
+            font-size: 14px;
         }
 
         #logoutBtn:hover {
