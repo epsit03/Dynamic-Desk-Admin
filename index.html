@@ -13,6 +13,8 @@
             padding: 0;
             background-color: #f8f9fd;
             display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         h2 {
@@ -240,7 +242,7 @@
             background-color: #c82333;
         }
 
-         /* Footer Styling */
+        /* Footer Styling */
         footer {
             text-align: center;
             padding: 20px;
@@ -297,240 +299,34 @@
 
             <!-- Data Table -->
             <table id="dashboardTable">
-                <thead>
-                    <tr id="headerRow">
-                        <!-- Dynamic headers will appear here -->
-                    </tr>
+                <thead id="dashboardHeader">
+                    <tr></tr>
                 </thead>
-                <tbody id="bodyRows">
-                    <!-- Dynamic rows will appear here -->
-                </tbody>
+                <tbody id="dashboardBody"></tbody>
             </table>
-
-            <!-- Dashboard View -->
-            <div id="dashboard">
-                <h3>Dashboard Data</h3>
-                <table id="dashboardDataTable">
-                    <thead id="dashboardHeader">
-                        <!-- Dashboard headers will be added here -->
-                    </thead>
-                    <tbody id="dashboardBody">
-                        <!-- Dashboard rows will be added here -->
-                    </tbody>
-                </table>
-            </div>
-
-            <button id="logoutBtn" onclick="handleLogout()">Logout</button>
         </div>
+
+        <!-- Logout Button -->
+        <button id="logoutBtn" onclick="handleLogout()">Logout</button>
     </div>
 
-     <!-- Footer -->
+    <!-- Footer -->
     <footer>
         Designed and Developed by <a href="#">Epsit Bhardwaj</a> for Deshyoga Charitable Trust. &copy; 2024
     </footer>
 
-    <!-- Add SheetJS Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
+    <!-- Include necessary libraries -->
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     <script>
-        const inputTypes = ['text', 'number', 'date', 'email', 'rupees', 'password', 'checkbox', 'radio', 'file', 'color', 'range', 'search', 'tel', 'time', 'url', 'week', 'month'];
-        let columnSettings = [];
-        let savedSheets = {};
-
-        // Handle Admin Login
-        function handleLogin() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-
-            // Basic credential check (replace with your logic)
-            if (username === 'admin' && password === 'password') {
-                document.getElementById('loginForm').style.display = 'none';
-                document.querySelector('.protected-content').style.display = 'block';
-                document.getElementById('logoutBtn').style.display = 'inline-block';
-            } else {
-                alert('Invalid login credentials!');
-            }
-        }
-
-        // Handle Admin Logout
-        function handleLogout() {
-            document.getElementById('loginForm').style.display = 'block';
-            document.querySelector('.protected-content').style.display = 'none';
-            document.getElementById('logoutBtn').style.display = 'none';
-        }
-
-        // Button event listeners for dynamic table functionality
-        document.getElementById('newSheetBtn').addEventListener('click', newSheet);
-        document.getElementById('addColumnBtn').addEventListener('click', addColumn);
-        document.getElementById('addRowBtn').addEventListener('click', addRow);
-        document.getElementById('submitBtn').addEventListener('click', submitData);
-        document.getElementById('downloadExcelBtn').addEventListener('click', downloadExcel);
-
-        // Existing functions for handling dynamic columns, rows, saving/loading sheets, and downloading Excel...
-        // (Already in your previous implementation)
-            function newSheet() {
-            const sheetName = prompt("Enter the name of the new sheet:");
-
-            if (!sheetName) {
-                alert("Sheet name is required.");
-                return;
-            }
-
-            // Clear current table and column settings
-            document.getElementById('headerRow').innerHTML = '';
-            document.getElementById('bodyRows').innerHTML = '';
-            columnSettings = [];
-
-            // Add the new sheet to the sidebar
-            const sheetList = document.getElementById('savedSheetsList');
-            const listItem = document.createElement('li');
-            listItem.textContent = sheetName;
-            listItem.addEventListener('click', () => loadSheet(sheetName));
-            sheetList.appendChild(listItem);
-
-            // Create new sheet in the savedSheets object
-            savedSheets[sheetName] = { columns: [], rows: [] };
-        }
-
-        function addColumn() {
-            const headerRow = document.getElementById('headerRow');
-            const th = document.createElement('th');
-
-            const headerInput = document.createElement('input');
-            headerInput.type = 'text';
-            headerInput.placeholder = 'Column Title';
-            th.appendChild(headerInput);
-            headerRow.appendChild(th);
-
-            const select = document.createElement('select');
-            inputTypes.forEach(type => {
-                const option = document.createElement('option');
-                option.value = type;
-                option.textContent = type;
-                select.appendChild(option);
-            });
-            th.appendChild(document.createElement('br'));
-            th.appendChild(select);
-
-            columnSettings.push({ headerInput, select });
-        }
-
-        function addRow() {
-            const tableBody = document.getElementById('bodyRows');
-            const tr = document.createElement('tr');
-
-            columnSettings.forEach(setting => {
-                const td = document.createElement('td');
-                const inputElement = document.createElement('input');
-                inputElement.type = setting.select.value;
-                td.appendChild(inputElement);
-                tr.appendChild(td);
-            });
-
-            tableBody.appendChild(tr);
-        }
-
-        function submitData() {
-            const data = [];
-            const headers = Array.from(document.getElementById('headerRow').getElementsByTagName('input')).map(input => input.value);
-            data.push(headers);
-
-            const rows = document.getElementById('bodyRows').getElementsByTagName('tr');
-            for (let row of rows) {
-                const rowData = Array.from(row.getElementsByTagName('input')).map(input => input.value);
-                data.push(rowData);
-            }
-
-            const dashboardHeader = document.getElementById('dashboardHeader');
-            const dashboardBody = document.getElementById('dashboardBody');
-
-            dashboardHeader.innerHTML = '';
-            dashboardBody.innerHTML = '';
-
-            // Add headers to dashboard table
-            const headerRow = document.createElement('tr');
-            headers.forEach(header => {
-                const th = document.createElement('th');
-                th.textContent = header;
-                headerRow.appendChild(th);
-            });
-            dashboardHeader.appendChild(headerRow);
-
-            // Add data rows to dashboard table
-            data.slice(1).forEach(row => {
-                const tr = document.createElement('tr');
-                row.forEach(cellData => {
-                    const td = document.createElement('td');
-                    td.textContent = cellData;
-                    tr.appendChild(td);
-                });
-                dashboardBody.appendChild(tr);
-            });
-
-            // Save to savedSheets
-            const sheetName = Object.keys(savedSheets).find(sheet => savedSheets[sheet].columns.length === 0);
-            if (sheetName) {
-                savedSheets[sheetName].columns = headers;
-                savedSheets[sheetName].rows = data.slice(1); // Exclude headers
-            }
-        }
-
-        function loadSheet(sheetName) {
-            const sheet = savedSheets[sheetName];
-            if (!sheet) return;
-
-            document.getElementById('headerRow').innerHTML = '';
-            document.getElementById('bodyRows').innerHTML = '';
-
-            columnSettings = [];
-
-            sheet.columns.forEach((header, index) => {
-                const th = document.createElement('th');
-                const headerInput = document.createElement('input');
-                headerInput.type = 'text';
-                headerInput.value = header;
-                th.appendChild(headerInput);
-
-                const select = document.createElement('select');
-                inputTypes.forEach(type => {
-                    const option = document.createElement('option');
-                    option.value = type;
-                    option.textContent = type;
-                    select.appendChild(option);
-                });
-                th.appendChild(document.createElement('br'));
-                th.appendChild(select);
-
-                document.getElementById('headerRow').appendChild(th);
-                columnSettings.push({ headerInput, select });
-            });
-
-            sheet.rows.forEach(rowData => {
-                const tr = document.createElement('tr');
-                rowData.forEach((cellData, index) => {
-                    const td = document.createElement('td');
-                    const inputElement = document.createElement('input');
-                    inputElement.type = columnSettings[index].select.value;
-                    inputElement.value = cellData;
-                    td.appendChild(inputElement);
-                    tr.appendChild(td);
-                });
-                document.getElementById('bodyRows').appendChild(tr);
-            });
-        }
+        // Your JavaScript code goes here (login handling, dynamic table creation, etc.)
 
         function downloadExcel() {
-    // Get the table containing the submitted data (which is the dashboardDataTable)
-    const table = document.getElementById('dashboardDataTable');
+            const table = document.getElementById('dashboardTable');
+            const workbook = XLSX.utils.table_to_book(table);
+            XLSX.writeFile(workbook, 'sheet_data.xlsx');
+        }
 
-    // Create a new workbook from the table
-    const workbook = XLSX.utils.table_to_book(table);
-
-    // Save the workbook as an Excel file
-    XLSX.writeFile(workbook, 'sheet_data.xlsx');
-}
-
+        document.getElementById('downloadExcelBtn').addEventListener('click', downloadExcel);
     </script>
-
 </body>
 </html>
