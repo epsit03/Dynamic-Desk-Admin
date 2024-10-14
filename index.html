@@ -496,10 +496,16 @@
         }
 
         function downloadExcel() {
-            const table = document.getElementById('dashboardTable');
-            const workbook = XLSX.utils.table_to_book(table);
-            XLSX.writeFile(workbook, 'sheet_data.xlsx');
-        }
+    // Get the table containing the submitted data (which is the dashboardDataTable)
+    const table = document.getElementById('dashboardDataTable');
+
+    // Create a new workbook from the table
+    const workbook = XLSX.utils.table_to_book(table);
+
+    // Save the workbook as an Excel file
+    XLSX.writeFile(workbook, 'sheet_data.xlsx');
+}
+
     </script>
 
 </body>
