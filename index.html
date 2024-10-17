@@ -284,7 +284,7 @@
             <!-- Button Controls -->
             <div class="column-container">
                  <!-- File Upload Button -->
-    <input type="file" id="fileInput" accept=".csv, .xlsx" />
+   <!-- <input type="file" id="fileInput" accept=".csv, .xlsx" /> -->
                 <button id="newSheetBtn">New Sheet</button>
                 <button id="addColumnBtn">Add Column</button>
                 <button id="addRowBtn">Add Row</button>
@@ -354,53 +354,53 @@
 
         //fileInput
 
-        document.getElementById('fileInput').addEventListener('change', handleFile, false);
+ //       document.getElementById('fileInput').addEventListener('change', handleFile, false);
 
-        function handleFile(event) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
+   //     function handleFile(event) {
+     //       const file = event.target.files[0];
+       //     const reader = new FileReader();
 
-            reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                const sheetData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+         //   reader.onload = function(e) {
+           //     const data = new Uint8Array(e.target.result);
+             //   const workbook = XLSX.read(data, { type: 'array' });
+               // const firstSheetName = workbook.SheetNames[0];
+                //const worksheet = workbook.Sheets[firstSheetName];
+                //const sheetData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-                displaySheet(sheetData);
-            };
+                //displaySheet(sheetData);
+            //};
 
-            reader.readAsArrayBuffer(file);
-        }
+            //reader.readAsArrayBuffer(file);
+        //}
 
-        function displaySheet(data) {
-            const tableHeader = document.getElementById('tableHeader');
-            const tableBody = document.getElementById('tableBody');
+  //      function displaySheet(data) {
+    //        const tableHeader = document.getElementById('tableHeader');
+      //      const tableBody = document.getElementById('tableBody');
 
             // Clear previous table
-            tableHeader.innerHTML = '';
-            tableBody.innerHTML = '';
+        //    tableHeader.innerHTML = '';
+          //  tableBody.innerHTML = '';
 
             // Create table header
-            const headers = data[0];
-            headers.forEach(header => {
-                const th = document.createElement('th');
-                th.textContent = header;
-                tableHeader.appendChild(th);
-            });
+            //const headers = data[0];
+            //headers.forEach(header => {
+              //  const th = document.createElement('th');
+                //th.textContent = header;
+                //tableHeader.appendChild(th);
+            //});
 
             // Create table rows
-            data.slice(1).forEach(row => {
-                const tr = document.createElement('tr');
-                row.forEach(cell => {
-                    const td = document.createElement('td');
-                    td.contentEditable = true; // Allow editing
-                    td.textContent = cell;
-                    tr.appendChild(td);
-                });
-                tableBody.appendChild(tr);
-            });
-        }
+    //        data.slice(1).forEach(row => {
+          //      const tr = document.createElement('tr');
+              //  row.forEach(cell => {
+                  //  const td = document.createElement('td');
+               //     td.contentEditable = true; // Allow editing
+                  //  td.textContent = cell;
+                 //   tr.appendChild(td);
+        //        });
+         //       tableBody.appendChild(tr);
+         //   });
+     //   }
 
         // Handle Admin Login
         function handleLogin() {
