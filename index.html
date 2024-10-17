@@ -239,6 +239,20 @@
         #logoutBtn:hover {
             background-color: #c82333;
         }
+
+        .search-container {
+  text-align: right;
+  margin: 20px 0;
+}
+
+#master-search-bar {
+  padding: 10px;
+  width: 300px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
     </style>
 </head>
 <body>
@@ -288,6 +302,12 @@
                 </tbody>
             </table>
 
+            <!-- Search bar -->
+            <div class="search-container">
+  <input type="text" id="master-search-bar" placeholder="Search..." onkeyup="searchDashboard()" />
+</div>
+
+
             <!-- Dashboard View -->
             <div id="dashboard">
                 <h3>Dashboard Data</h3>
@@ -312,6 +332,24 @@
         const inputTypes = ['text', 'number', 'date', 'email', 'rupees', 'password', 'checkbox', 'radio', 'file', 'color', 'range', 'search', 'tel', 'time', 'url', 'week', 'month'];
         let columnSettings = [];
         let savedSheets = {};
+
+        //searchbar
+        function searchDashboard() {
+  let input = document.getElementById('master-search-bar').value.toLowerCase();
+  let tableRows = document.querySelectorAll('table tbody tr');  // Adjust selector if needed
+
+  tableRows.forEach(row => {
+    let rowData = row.innerText.toLowerCase();
+
+    // Display the row if it matches the search term
+    if (rowData.includes(input)) {
+      row.style.display = "";
+    } else {
+      row.style.display = "none";
+    }
+  });
+}
+
 
         // Handle Admin Login
         function handleLogin() {
