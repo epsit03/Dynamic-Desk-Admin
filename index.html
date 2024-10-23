@@ -430,7 +430,6 @@
         document.getElementById('downloadExcelBtn').addEventListener('click', downloadExcel);
 
         // Existing functions for handling dynamic columns, rows, saving/loading sheets, and downloading Excel...
-        // (Already in your previous implementation)
             function newSheet() {
             const sheetName = prompt("Enter the name of the new sheet:");
 
@@ -493,7 +492,6 @@
         //     tableBody.appendChild(tr);
         // }
         // To keep track of the column settings for each added column
-const columnSettings = [];
 
 function addColumn() {
     const headerRow = document.getElementById('headerRow');
@@ -522,6 +520,7 @@ function addColumn() {
 }
 
 // Function to add a row to the table
+// Updated function to add a row to the table with 'tel' input logic
 function addRow() {
     const tableBody = document.getElementById('bodyRows');
     const tr = document.createElement('tr');
@@ -543,7 +542,49 @@ function addRow() {
             });
 
             td.appendChild(statusSelect);
+
+        // Special handling for 'tel' type
+        } else if (selectedType === 'tel') {
+            const telInput = document.createElement('input');
+            telInput.type = 'tel';
+            telInput.placeholder = 'Enter phone number';
+
+            // Create a container for the phone input and buttons
+            const telContainer = document.createElement('div');
+
+            // Add the tel input
+            telContainer.appendChild(telInput);
+
+            // Create Call Button
+            const callButton = document.createElement('button');
+            callButton.textContent = 'Call';
+            callButton.onclick = () => {
+                if (telInput.value) {
+                    window.open(`tel:${telInput.value}`);
+                } else {
+                    alert('Please enter a valid phone number');
+                }
+            };
+            telContainer.appendChild(callButton);
+
+            // Create WhatsApp Button
+            const whatsappButton = document.createElement('button');
+            whatsappButton.textContent = 'WhatsApp';
+            whatsappButton.onclick = () => {
+                const phoneNumber = telInput.value.replace(/\D/g, ''); // Remove non-numeric characters
+                if (phoneNumber) {
+                    window.open(`https://api.whatsapp.com/send?phone=${phoneNumber}`);
+                } else {
+                    alert('Please enter a valid phone number');
+                }
+            };
+            telContainer.appendChild(whatsappButton);
+
+            // Append the entire container with input and buttons to the cell
+            td.appendChild(telContainer);
+        
         } else {
+            // Default input for other types
             const input = document.createElement('input');
             input.type = selectedType;
             td.appendChild(input);
@@ -644,16 +685,49 @@ function addRow() {
                 document.getElementById('bodyRows').appendChild(tr);
             });
         }
-
         function downloadExcel() {
-    // Get the table containing the submitted data (which is the dashboardDataTable)
     const table = document.getElementById('dashboardDataTable');
+    const workbook = XLSX.utils.book_new(); // Create a new workbook
+    const worksheetData = [];
+    
+    // Get the headers from the table
+    const headers = Array.from(table.querySelectorAll('thead tr th')).map(th => th.textContent);
+    worksheetData.push(headers); // Add headers to the worksheet data
 
-    // Create a new workbook from the table
-    const workbook = XLSX.utils.table_to_book(table);
+    // Get the body rows
+    const rows = table.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        const rowData = [];
+        row.querySelectorAll('td').forEach((cell, index) => {
+            const inputElement = cell.querySelector('input, select');
+            const selectedType = columnSettings[index].select.value; // Get the type of the column
+
+            let cellValue = '';
+
+            // Handle different data types, including 'tel' and 'status'
+            if (inputElement) {
+                if (selectedType === 'tel') {
+                    cellValue = inputElement.value; // Phone number
+                } else if (selectedType === 'status') {
+                    cellValue = inputElement.value; // Status dropdown value
+                } else {
+                    cellValue = inputElement.value; // Default for other input types
+                }
+            } else {
+                cellValue = cell.textContent || ''; // If no input, get text content
+            }
+
+            rowData.push(cellValue);
+        });
+        worksheetData.push(rowData);
+    });
+
+    // Create a new worksheet from the collected data
+    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
 
     // Save the workbook as an Excel file
-    XLSX.writeFile(workbook, 'sheet_data.xlsx');
+    XLSX.writeFile(workbook, 'sheet_data_with_types.xlsx');
 }
 
     </script>
