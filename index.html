@@ -329,7 +329,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <script>
-        const inputTypes = ['text', 'number', 'date', 'email', 'rupees', 'password', 'checkbox', 'radio', 'file', 'color', 'range', 'search', 'tel', 'time', 'url', 'week', 'month'];
+        const inputTypes = ['text', 'number', 'date', 'email', 'rupees', 'status', 'password', 'checkbox', 'radio', 'file', 'color', 'range', 'search', 'tel', 'time', 'url', 'week', 'month'];
         let columnSettings = [];
         let savedSheets = {};
 
@@ -455,43 +455,106 @@
             savedSheets[sheetName] = { columns: [], rows: [] };
         }
 
-        function addColumn() {
-            const headerRow = document.getElementById('headerRow');
-            const th = document.createElement('th');
+        // function addColumn() {
+        //     const headerRow = document.getElementById('headerRow');
+        //     const th = document.createElement('th');
 
-            const headerInput = document.createElement('input');
-            headerInput.type = 'text';
-            headerInput.placeholder = 'Column Title';
-            th.appendChild(headerInput);
-            headerRow.appendChild(th);
+        //     const headerInput = document.createElement('input');
+        //     headerInput.type = 'text';
+        //     headerInput.placeholder = 'Column Title';
+        //     th.appendChild(headerInput);
+        //     headerRow.appendChild(th);
 
-            const select = document.createElement('select');
-            inputTypes.forEach(type => {
+        //     const select = document.createElement('select');
+        //     inputTypes.forEach(type => {
+        //         const option = document.createElement('option');
+        //         option.value = type;
+        //         option.textContent = type;
+        //         select.appendChild(option);
+        //     });
+        //     th.appendChild(document.createElement('br'));
+        //     th.appendChild(select);
+
+        //     columnSettings.push({ headerInput, select });
+        // }
+
+        // function addRow() {
+        //     const tableBody = document.getElementById('bodyRows');
+        //     const tr = document.createElement('tr');
+
+        //     columnSettings.forEach(setting => {
+        //         const td = document.createElement('td');
+        //         const inputElement = document.createElement('input');
+        //         inputElement.type = setting.select.value;
+        //         td.appendChild(inputElement);
+        //         tr.appendChild(td);
+        //     });
+
+        //     tableBody.appendChild(tr);
+        // }
+        // To keep track of the column settings for each added column
+const columnSettings = [];
+
+function addColumn() {
+    const headerRow = document.getElementById('headerRow');
+    const th = document.createElement('th');
+
+    // Input for column title
+    const headerInput = document.createElement('input');
+    headerInput.type = 'text';
+    headerInput.placeholder = 'Column Title';
+    th.appendChild(headerInput);
+    headerRow.appendChild(th);
+
+    // Dropdown for selecting input type
+    const select = document.createElement('select');
+    inputTypes.forEach(type => {
+        const option = document.createElement('option');
+        option.value = type;
+        option.textContent = type;
+        select.appendChild(option);
+    });
+    th.appendChild(document.createElement('br'));
+    th.appendChild(select);
+
+    // Keep track of the column settings
+    columnSettings.push({ headerInput, select });
+}
+
+// Function to add a row to the table
+function addRow() {
+    const tableBody = document.getElementById('bodyRows');
+    const tr = document.createElement('tr');
+
+    columnSettings.forEach((column, index) => {
+        const td = document.createElement('td');
+        const selectedType = column.select.value;
+
+        // Special handling for 'status' type
+        if (selectedType === 'status') {
+            const statusSelect = document.createElement('select');
+            const statuses = ['Active', 'Inactive', 'Pending']; // Status options
+
+            statuses.forEach(status => {
                 const option = document.createElement('option');
-                option.value = type;
-                option.textContent = type;
-                select.appendChild(option);
-            });
-            th.appendChild(document.createElement('br'));
-            th.appendChild(select);
-
-            columnSettings.push({ headerInput, select });
-        }
-
-        function addRow() {
-            const tableBody = document.getElementById('bodyRows');
-            const tr = document.createElement('tr');
-
-            columnSettings.forEach(setting => {
-                const td = document.createElement('td');
-                const inputElement = document.createElement('input');
-                inputElement.type = setting.select.value;
-                td.appendChild(inputElement);
-                tr.appendChild(td);
+                option.value = status;
+                option.textContent = status;
+                statusSelect.appendChild(option);
             });
 
-            tableBody.appendChild(tr);
+            td.appendChild(statusSelect);
+        } else {
+            const input = document.createElement('input');
+            input.type = selectedType;
+            td.appendChild(input);
         }
+
+        tr.appendChild(td);
+    });
+
+    tableBody.appendChild(tr);
+}
+
 
         function submitData() {
             const data = [];
